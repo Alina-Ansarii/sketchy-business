@@ -1,0 +1,21 @@
+{
+  "name": "sketchy-business",
+  "version": "1.0.0",
+  "description": "A real-time multiplayer solo project built with my own art",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+"scripts": {
+  "dev": "nodemon server.js"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

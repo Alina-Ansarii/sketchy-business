@@ -1,0 +1,27 @@
+body {
+  background: linear-gradient(to bottom,rgb(233, 205, 234), #acc7e3);
+  font-family: sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color:#2b2b40;
+}
+
+#board {
+  border: 2px solid #333;
+  background-color:  #f0f4f8;
+  display: block;
+  margin: 20px auto;
+}
+
+#guess {
+  padding: 8px;
+  font-size: 16px;
+}
+
+#sendBtn {
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
