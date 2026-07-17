@@ -29,6 +29,8 @@ A working multiplayer drawing/guessing game where:
 
 ## 2. How I want to be taught (the mentor brief — important)
 
+> **Standing instruction — apply this automatically.** Every time a new chat opens in this project, follow this teaching style **preemptively**, from the first reply, without being reminded. This section is the default mode for Sketchy Business, not something I have to re-request each session.
+
 Your role is **NOT** just to tell me what code to type. Act like a **patient technical tutor and project mentor** who helps me deeply understand what every piece is doing. Assume I'm a **beginner, not lazy** — if I ask what a line means, expand enough to build real intuition; don't give a one-line definition.
 
 **I want to understand:** what each line does · what object/function/method/property each thing refers to · **where the code runs (browser/client vs Node/server)** · what the browser is doing vs what my JavaScript is doing · what the server does vs the browser · how the parts connect conceptually · how it compares to Java when helpful.
@@ -93,12 +95,20 @@ Client/server, HTTP request→response, ports, **why a middle-man server is need
 - Learned `express.static("public")` serves the client files.
 - Discussed **nodemon** as an auto-restart dev tool (not yet tested).
 
+### ✅ Day 2 accomplishments (Mon July 13) — Milestone 2 done
+- Turned the hard-coded Day-1 line into **live freehand mouse drawing** — I can scribble!
+- Learned the **three mouse events** (`mousedown` / `mousemove` / `mouseup`) and the **flag pattern** (`let drawing`) that gates painting.
+- Met the **event object** and **`offsetX` / `offsetY`** (pointer position relative to the canvas).
+- Debugged a real `ReferenceError: e is not defined` → understood that the callback only receives the event object if I **name a parameter** (`function (e)`) to catch it.
+- Reinforced that **all of this runs in the browser** — the server was asleep the whole time.
+- Guide: `docs/Day-2-Sketchy-Business.md`.
+
 ### 🧠 Concepts I've now seen (build on these, don't restart from zero)
-client vs server · event-driven JS · DOM & `document` · `getElementById` · `addEventListener` / callbacks · canvas 2D context & the draw ritual · Node.js basics · Express `app` / `app.use` / `app.listen` · `require` · static file serving · localhost & ports · nodemon.
+client vs server · event-driven JS · DOM & `document` · `getElementById` · `addEventListener` / callbacks · **the event object & parameter** · **`offsetX`/`offsetY`** · **mouse events (down/move/up)** · **flag / shared-state pattern** · canvas 2D context & the draw ritual · Node.js basics · Express `app` / `app.use` / `app.listen` · `require` · static file serving · localhost & ports · nodemon.
 
 ### ❓ Current confusion / weak spots (revisit & reinforce)
 - Want a **stronger mental model** for what it means that Node runs JavaScript "outside the browser." *(Partial clarification in `learnings/Day-01.md` — keep reinforcing.)*
-- Want a **clearer picture of the browser/server boundary** — what code runs where.
+- Want a **clearer picture of the browser/server boundary** — what code runs where. *(Week 3 breaks this open: strokes start crossing the wire — the perfect place to make it click.)*
 - Want to keep **strengthening DOM / event / canvas intuition** instead of just copying code.
 
 ---
@@ -113,9 +123,11 @@ sketchy-business/
 ├── server.js          ← the Node/Express server (stays OUTSIDE public/)
 ├── docs/
 │   ├── CONTEXT.md                 ← this file (project + plan + mentor brief)
-│   └── Day-1-Sketchy-Business.md  ← the Day 1 in-depth build guide
+│   ├── Day-1-Sketchy-Business.md  ← Day 1 in-depth build guide
+│   ├── Day-2-Sketchy-Business.md  ← Day 2 in-depth guide (Milestone 2: live drawing)
+│   └── Day-3-Sketchy-Business.md  ← Day 3 in-depth guide (Milestone 3: Socket.IO)
 ├── learnings/
-│   └── Day-01.md      ← one learnings file per day, in my own words
+│   └── Day-01.md      ← one learnings file per day, in my own words (Day-02 = to write)
 ├── package.json
 ├── .gitignore         ← ignores node_modules/
 └── README.md
@@ -125,5 +137,56 @@ sketchy-business/
 - **Guides:** step-by-step build guides live in `docs/`.
 - **Commit** at the end of every working day.
 
-## 6. Where Day 2 picks up
-Turn the single hard-coded canvas line into **real freehand drawing** — track the mouse (`mousedown`, `mousemove`, `mouseup`) so I can actually scribble. Week 2, the fun visual week.
+### Commit style — Conventional Commits (always use this)
+
+> **Standing instruction:** every Git commit message I'm given must follow the **Conventional Commits** spec. Never hand me a plain `git commit -m "stuff"` — always the structured form below.
+
+**Structure:**
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Types I'll use:**
+- `feat:` — a new feature (e.g. live drawing, rooms, scoring). *(SemVer MINOR)*
+- `fix:` — a bug patch. *(SemVer PATCH)*
+- `docs:` — docs only (guides, README, this file).
+- `style:` — formatting/whitespace, no logic change.
+- `refactor:` — code change that neither fixes a bug nor adds a feature.
+- `perf:` — a performance improvement.
+- `test:` — adding or fixing tests.
+- `chore:` — tooling, deps, config (e.g. adding Socket.IO, nodemon).
+- `build:` / `ci:` — build system or CI.
+
+**Breaking changes:** append `!` after the type/scope **and/or** add a `BREAKING CHANGE:` footer. Correlates with SemVer MAJOR.
+
+**Scope** (optional, in parentheses) adds context: `feat(canvas): …`, `feat(server): …`, `fix(socket): …`.
+
+**Examples for this project:**
+```
+feat(canvas): add live mouse drawing on the canvas
+```
+```
+feat(socket): broadcast strokes so other tabs see them live
+```
+```
+fix(canvas): pass event object to mouse handlers
+```
+```
+docs: add Day 2 milestone guide
+```
+```
+chore: add socket.io dependency
+```
+```
+feat(server)!: move secret word to server-side only
+
+BREAKING CHANGE: clients no longer receive the word; they must guess.
+```
+- Description: imperative mood ("add", not "added"), lowercase, no trailing period.
+
+## 6. Where Day 3 picks up — Milestone 3 (the heart)
+**Real-time multiplayer with Socket.IO.** Add Socket.IO to the server and client, confirm they connect, send a test message both ways (`emit` / `on`), then **broadcast each drawn stroke through the server so it appears in another tab live** — Milestone 3, "THE moment." This is where the browser/server boundary finally breaks open: strokes leave the browser, hit the server, and come back down to every other client. Guide: `docs/Day-3-Sketchy-Business.md`.
