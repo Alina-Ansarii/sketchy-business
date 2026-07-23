@@ -22,13 +22,18 @@ app.use(express.static("public"));
 io.on("connection", function(socket) {
   console.log("A user connected: ", socket.id);
 
+  socket.on("join", function(room) {
+    socket.join(room);
+    console.log(socket.id, "joined room:", room);
+  });
+
   socket.on("disconnect", function() {
     console.log("A user left: ", socket.id);
   });
 
-  //everyone draws
+  //relay strokes to others in the same room
   socket.on("draw", function(data) {
-    socket.broadcast.emit("draw", data);
+    socket.to(data.room).emit("draw", data);
   });
 
 });
