@@ -6,6 +6,17 @@ socket.on("connect", function () {
   console.log("connected to server, my id is ", socket.id);
 });
 
+const roomInput = document.getElementById("roomCode");
+const joinBtn = document.getElementById("joinBtn");
+
+let myRoom = null;
+
+joinBtn.addEventListener("click", function() {
+  myRoom = roomInput.value;
+  socket.emit("join", myRoom);
+  console.log("joined room:", myRoom);
+});
+
 
 //----------------------------button details:
 const sendBtn = document.getElementById("sendBtn");
@@ -20,8 +31,6 @@ sendBtn.addEventListener("click", function() {
 
 
 //--------------------------canvas details:
-
-
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 ctx.strokeStyle = "pink"; // line colour
@@ -54,7 +63,7 @@ canvas.addEventListener("mousemove", function(e) {
   //draw it here
   drawLine(last.x, last.y, x, y);
   //send it to others
-  socket.emit("draw", { x0: last.x, y0: last.y, x1:x, y1:y });
+  socket.emit("draw", { x0: last.x, y0: last.y, x1:x, y1:y, room: myRoom });
 
   last = { x:x, y:y };
 });
@@ -62,7 +71,7 @@ canvas.addEventListener("mousemove", function(e) {
 canvas.addEventListener("mouseup", function(e) {
   drawing = false;
 });
-3
+
 //draws when server send someone elses object
 //data is what they send
 socket.on("draw", function(data) {
