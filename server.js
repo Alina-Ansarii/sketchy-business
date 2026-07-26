@@ -40,6 +40,18 @@ io.on("connection", function(socket) {
     socket.to(description.room).emit("prompt", description);
   });
 
+  socket.on("startRound", function(room) {
+    const players = io.sockets.adapter.rooms.get(room);
+
+    //no such room — bail quietly
+    if (!players) return;                    
+    const arr = Array.from(players);
+    const witnessIndex = Math.floor(Math.random() * arr.length);
+    const witnessId = arr[witnessIndex];
+
+    io.to(room).emit("roundStarted", { witnessId });
+  }); 
+
 });
 
 

@@ -42,9 +42,25 @@ promptBtn.addEventListener("click", function() {
   socket.emit("prompt", { text, room: myRoom });
 });
 
-
 socket.on("prompt", function(data) {
   descriptionEl.textContent = data.text;
+});
+
+//----------------------------start button details:
+const startBtn = document.getElementById("startBtn");
+
+startBtn.addEventListener("click", function() {
+  socket.emit("startRound", myRoom);
+  console.log("Round started in room:", myRoom);
+});
+
+socket.on("roundStarted", function(data) {
+  if (data.witnessId == socket.id) {
+    console.log("I am the witness");
+  }
+  else {
+    console.log("I am a drawer");
+  }
 });
 
 //--------------------------canvas details:
