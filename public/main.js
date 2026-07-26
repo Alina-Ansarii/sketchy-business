@@ -6,6 +6,7 @@ socket.on("connect", function () {
   console.log("connected to server, my id is ", socket.id);
 });
 
+//----------------------------room details:
 const roomInput = document.getElementById("roomCode");
 const joinBtn = document.getElementById("joinBtn");
 
@@ -25,10 +26,26 @@ const output = document.getElementById("output");
 
 sendBtn.addEventListener("click", function() {
   const text = guessInput.value;
-  console.log(output.textContent = "Your typed: " + text);
+  console.log(output.textContent = "You typed: " + text);
   console.log("Guess submitted:", text);
 });
 
+//----------------------------prompt button details:
+const promptBtn = document.getElementById("promptBtn");
+const promptInput = document.getElementById("prompt");
+const descriptionEl = document.getElementById("description");
+
+promptBtn.addEventListener("click", function() {
+  const text = promptInput.value;
+  console.log("Prompt submitted:", text);
+
+  socket.emit("prompt", { text, room: myRoom });
+});
+
+
+socket.on("prompt", function(data) {
+  descriptionEl.textContent = data.text;
+});
 
 //--------------------------canvas details:
 const canvas = document.getElementById("board");
@@ -37,8 +54,6 @@ ctx.strokeStyle = "pink"; // line colour
 ctx.lineWidth = 4;
 ctx.lineCap = "round";
 ctx.lineJoin = "round";
-
-
 
 function drawLine(x0, y0, x1, y1) {
   ctx.beginPath();
@@ -77,3 +92,5 @@ canvas.addEventListener("mouseup", function(e) {
 socket.on("draw", function(data) {
   drawLine(data.x0, data.y0, data.x1, data.y1);
 });
+
+

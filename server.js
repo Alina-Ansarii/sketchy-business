@@ -36,6 +36,10 @@ io.on("connection", function(socket) {
     socket.to(data.room).emit("draw", data);
   });
 
+  socket.on("prompt", function(description)  {
+    socket.to(description.room).emit("prompt", description);
+  });
+
 });
 
 
