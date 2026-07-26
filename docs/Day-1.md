@@ -1,6 +1,5 @@
 # 🎨 Sketchy Business — Day 1 (In-Depth)
 
-> Project-only. No LeetCode, no side tracks. Just the game.
 > **You type every line. I explain every line.** The struggle is where the skill forms.
 >
 > **How each task is laid out:** first the **explanation** (the concept, from scratch), then **how to do it** (the steps), then **the code** (the thing to type, at the end).
@@ -452,7 +451,7 @@ npm run dev
 ## Task 9 — Commit and push (never skip this)
 
 ### Explanation
-Your GitHub history *is* the proof you built this — the thing that unlocks internships next year. Every working day ends with a commit, even tiny ones. Build → commit → push is a muscle.
+Every working day ends with a commit, even tiny ones. Build → commit → push is a muscle.
 
 **The concepts:**
 - **Git** tracks your files' history — snapshots you can return to.

@@ -1,6 +1,5 @@
 # 🎨 Sketchy Business — Day 2: Milestone 2 (In-Depth)
 
-> Project-only. Just the game.
 > **You type every line. I explain every line.** The struggle is where the skill forms.
 >
 > **How each task is laid out:** first the **explanation** (the concept, from scratch), then **how to do it** (the steps), then **the code** (the thing to type, at the end), then **verify**. New this time: a **line-by-line breakdown**, **common mistakes**, and **experiments** for each real code block — because today one small idea (a boolean flag) unlocks the entire drawing engine, and it's worth chewing slowly.
@@ -270,4 +269,4 @@ The shipping habit is the CV. Small working step → commit. Every time.
 
 ---
 
-*Companion to Day-1-Sketchy-Business.md. When you've done this, write up Day 2 in your own words in `learnings/Day-02.md` — the "in my own words" pass is where it sticks.*
+*Companion to Day-1.md. When you've done this, write up Day 2 in your own words in `learnings/Day-02.md` — the "in my own words" pass is where it sticks.*

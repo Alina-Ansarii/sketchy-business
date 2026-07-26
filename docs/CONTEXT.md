@@ -60,7 +60,7 @@ Your role is **NOT** just to tell me what code to type. Act like a **patient tec
 
 **If I paste a block of instructions from another source** (class notes, another AI): do **not** assume I understand it. Treat it as something to unpack and teach me carefully.
 
-**Also (from earlier in the project):** I type the real code myself — you guide, explain, and give small reference snippets, but don't orchestrate the whole project for me. Struggle-first, read official docs, then ask for a hint. Every working day ends in something that works + a Git commit. **Project-only focus — no LeetCode / side tracks in this repo.**
+**Also (from earlier in the project):** I type the real code myself — you guide, explain, and give small reference snippets, but don't orchestrate the whole project for me. Struggle-first, read official docs, then ask for a hint. Every working day ends in something that works + a Git commit.
 
 ---
 
@@ -101,7 +101,7 @@ Client/server, HTTP request→response, ports, **why a middle-man server is need
 - Met the **event object** and **`offsetX` / `offsetY`** (pointer position relative to the canvas).
 - Debugged a real `ReferenceError: e is not defined` → understood that the callback only receives the event object if I **name a parameter** (`function (e)`) to catch it.
 - Reinforced that **all of this runs in the browser** — the server was asleep the whole time.
-- Guide: `docs/Day-2-Sketchy-Business.md`.
+- Guide: `docs/Day-2.md`.
 
 ### 🧠 Concepts I've now seen (build on these, don't restart from zero)
 client vs server · event-driven JS · DOM & `document` · `getElementById` · `addEventListener` / callbacks · **the event object & parameter** · **`offsetX`/`offsetY`** · **mouse events (down/move/up)** · **flag / shared-state pattern** · canvas 2D context & the draw ritual · Node.js basics · Express `app` / `app.use` / `app.listen` · `require` · static file serving · localhost & ports · nodemon.
@@ -123,9 +123,9 @@ sketchy-business/
 ├── server.js          ← the Node/Express server (stays OUTSIDE public/)
 ├── docs/
 │   ├── CONTEXT.md                 ← this file (project + plan + mentor brief)
-│   ├── Day-1-Sketchy-Business.md  ← Day 1 in-depth build guide
-│   ├── Day-2-Sketchy-Business.md  ← Day 2 in-depth guide (Milestone 2: live drawing)
-│   └── Day-3-Sketchy-Business.md  ← Day 3 in-depth guide (Milestone 3: Socket.IO)
+│   ├── Day-1.md  ← Day 1 in-depth build guide
+│   ├── Day-2.md  ← Day 2 in-depth guide (Milestone 2: live drawing)
+│   └── Day-3.md  ← Day 3 in-depth guide (Milestone 3: Socket.IO)
 ├── learnings/
 │   └── Day-01.md      ← one learnings file per day, in my own words (Day-02 = to write)
 ├── package.json
@@ -189,4 +189,4 @@ BREAKING CHANGE: clients no longer receive the word; they must guess.
 - Description: imperative mood ("add", not "added"), lowercase, no trailing period.
 
 ## 6. Where Day 3 picks up — Milestone 3 (the heart)
-**Real-time multiplayer with Socket.IO.** Add Socket.IO to the server and client, confirm they connect, send a test message both ways (`emit` / `on`), then **broadcast each drawn stroke through the server so it appears in another tab live** — Milestone 3, "THE moment." This is where the browser/server boundary finally breaks open: strokes leave the browser, hit the server, and come back down to every other client. Guide: `docs/Day-3-Sketchy-Business.md`.
+**Real-time multiplayer with Socket.IO.** Add Socket.IO to the server and client, confirm they connect, send a test message both ways (`emit` / `on`), then **broadcast each drawn stroke through the server so it appears in another tab live** — Milestone 3, "THE moment." This is where the browser/server boundary finally breaks open: strokes leave the browser, hit the server, and come back down to every other client. Guide: `docs/Day-3.md`.

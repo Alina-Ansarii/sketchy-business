@@ -1,6 +1,5 @@
 # 🎨 Sketchy Business — Day 3: Milestone 3 (In-Depth)
 
-> Project-only. Just the game.
 > **You type every line. I explain every line.** The struggle is where the skill forms.
 >
 > **Layout per task:** **explanation** (concept from scratch) → **how to do it** (steps) → **the code** (type it at the end) → **line-by-line** → **mental model** → **common mistakes** → **experiments** → **verify**. This is the big one — the browser/server boundary you keep asking about finally breaks open today.
