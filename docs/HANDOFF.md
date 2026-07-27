@@ -1,15 +1,15 @@
 # 🔁 Session Handoff — resume here next chat
 
 > **Read this first (with `docs/CONTEXT.md`) to pick up exactly where we stopped.**
-> This is a *mentor doc* (Claude's). My own words-notes live in `learnings/`. Keep this file overwritten/updated at the end of each session so it's always the live "you are here."
+> This is a *mentor doc* (Claude's). Amer's own words-notes live in `learnings/`. Keep this file overwritten/updated at the end of each session so it's always the live "you are here."
 >
-> **Last updated:** end of Day 4 session (Milestone 4 done — rooms working; game design captured).
+> **Last updated:** end of the Milestone 5 (part 1) session — roles + witness-only prompting shipped and server-enforced.
 
 ---
 
 ## 0. One-line status
 
-**Weeks 1–3 are complete. M3 (live drawing) confirmed with Amer's own eyes, M4 (rooms) shipped and tested (3-tab isolation works).** The entire networking spine is built. **Next session = Week 4 / Milestone 5: the game loop (the MVP).** Also this session: big creative pivot — the game is now a **police-sketch "describe → draw → rate" game**, fully captured in `docs/GAME-DESIGN.md`.
+**Weeks 1–3 complete; Milestone 5 is about HALF done.** The networking spine (live drawing, rooms) is built and confirmed. On top of it, the game loop has begun: the witness's prompt relays to the room, a **Start Round** button triggers a round, the **server picks a random witness**, roles show on screen, and **only the witness can prompt — enforced on the server** (proven with a dev-tools cheat test). **Next step = the rating step** (witness rates the blind drawings). Game direction is the police-sketch "describe → draw blind → rate" design in `docs/GAME-DESIGN.md`.
 
 ---
 
@@ -17,102 +17,86 @@
 
 | Milestone | What | Status |
 |---|---|---|
-| **M1** | Express server serves the page at `localhost:3000` | ✅ done (Day 1) |
-| **M2** | Freehand mouse drawing on the canvas ("I can scribble") | ✅ done (Day 2) |
-| **M3** | Drawing in one tab appears in another (Socket.IO) | ✅ **done & confirmed (Day 3)** |
-| **M4** | **Rooms (private canvas via a code)** | ✅ **done & confirmed (Day 4)** |
-| M5 | Game loop: prompt + roles + guessing/rating + scoring (MVP) | ⬜ **next (Week 4)** |
+| **M1** | Express server serves the page at `localhost:3000` | ✅ done |
+| **M2** | Freehand mouse drawing on the canvas | ✅ done |
+| **M3** | Drawing in one tab appears in another (Socket.IO) | ✅ done & confirmed |
+| **M4** | Rooms (private canvas via a code) | ✅ done & confirmed |
+| **M5** | Game loop / MVP | 🚧 **~half done — see below** |
 | M6 | Art + one unique twist (AI judge) + a fun visual | ⬜ |
 
-My notes: `learnings/` (Day-4+5 learnings doc still to write — Amer deferred it). Design: `docs/GAME-DESIGN.md`.
+### Milestone 5 — internal progress
+| Step | What | Status |
+|---|---|---|
+| Prompt relay (whole mode) | witness types → room receives | ✅ done |
+| Start Round button | browser sends a *command* to the server | ✅ done |
+| Server picks a witness | random, announced with `io.to(room)` | ✅ done |
+| Roles + witness-only prompting | shown on screen + **server-enforced** | ✅ done |
+| **Rating** | witness rates the blind drawings | 🟢 **NEXT** |
+| Scoring + reveal | server awards points, reveals target | ⬜ |
+| Rotate witness + loop | new round → new witness → repeat | ⬜ → tag `v0.1-mvp` |
+
+Guides: `docs/Day-1.md` … `docs/Day-5.md` (Day-5 covers this M5 session). Design: `docs/GAME-DESIGN.md`. Amer's notes: `learnings/Milestone-1.md`, `Milestone-2-3.md`, `Milestone-4-5.md`.
 
 ---
 
-## 2. 🟢 NEXT STEP (Week 4 — the game loop, Milestone 5)
+## 2. 🟢 NEXT STEP — the rating step (Milestone 5 continues)
 
-Networking is done; now put a **game** on top of the working pipes. Same Socket.IO `emit`/`on` — just new message types (`prompt`, `guess`/`rate`, `score`). Suggested day-by-day:
+The hardest ideas (server authority, server-side state, never-trust-the-client) are **done**. Remaining steps reuse those exact patterns with new message types (`rate`, `score`).
 
-1. **Server picks a prompt + assigns a witness/drawer role.** First real taste of *"server is the source of truth"* — and *why the target must live server-side* (if the browser knew it, players could cheat via dev tools). This is the Week-4 networking learning highlight ("never trust the client").
-2. **Wire up the guess/rate box** (the `#guess` input has existed unused since Day 1). Player submits → `socket.emit(...)` → **server** decides → announces to the room.
-3. **Scoring + reveal** — award points, reveal the target, tell the room.
-4. **Rotate the role + loop** — new witness, new prompt. Once it loops → **playable game → tag `v0.1-mvp`.** By Amer's own tracker, reaching here = **summer success.**
+1. **Rating.** After drawers make their blind sketches, the **witness** rates them (only the witness knows the target, so only they can judge — settled in `GAME-DESIGN.md §2`). Wire the long-dormant `#guess` box (unused since Day 1) into a rate action: witness acts → `socket.emit(...)` → **server** records → announces to the room. Server-side check again: only accept ratings from the room's stored witness (`rounds[room]`).
+2. **Scoring + reveal.** Server awards points from the ratings and reveals the target. Points live on the **server** (source of truth again).
+3. **Rotate + loop.** New witness, new prompt — the game *repeats*. When it loops cleanly → **playable MVP → tag `v0.1-mvp`** = summer success by Amer's own tracker.
 
-**Heads-up on direction:** per `GAME-DESIGN.md`, the game is no longer generic draw-and-guess. Whatever loop we build should fit the **witness describes → others draw blind → witness rates** shape. But Amer explicitly is **NOT locking a "main mode" yet** — build **one simple-but-interesting mode first**, decide which idea becomes central later. Don't over-scope. Ship by Week 6.
-
----
-
-## 2b. (archived) The old Day-3 verify step — DONE, kept for reference
-Confirmed M3 by running:
-- `npm run dev` (nodemon).
-- Open `localhost:3000`. Console should log **"connected to server, my id is …"**; terminal should log **"A user connected: …"**.
-- Open a **second window** side by side. Draw in one → it should appear in the other, live, both directions.
-- If it connects but strokes don't cross: check the event name is exactly `"draw"` on both client `emit`/`on` and server `on`/`broadcast.emit`; check `last` is being updated at the end of `mousemove`.
-
-Once two tabs draw to each other → **Milestone 3 is done. 🎉**
+**Direction reminder:** building **custom mode → whole mode** first (everyone gets the full description). Part mode (split description) and character mode (reference image) come later. Amer is **NOT** locking a "main mode" yet — build one simple-but-interesting loop, ship by Week 6, don't over-scope.
 
 ---
 
-## 3. Exact state of each file
+## 3. Exact state of each file (current & correct)
 
-### `server.js` — ✅ correct, no changes needed
-- Requires `express`, creates `app`.
-- Requires Node's `http`, `const server = http.createServer(app)`.
-- `const { Server } = require("socket.io")`, `const io = new Server(server)`.
-- `app.use(express.static("public"))` — still serves the client files.
-- `io.on("connection", socket => …)` logs connect + disconnect, and has:
-  `socket.on("draw", data => socket.broadcast.emit("draw", data))` — relays strokes to everyone **except** the sender.
-- Listens with **`server.listen(3000, …)`** (NOT `app.listen`). ✔
+### `server.js` — ✅ current
+- Express + `http.createServer(app)` + `new Server(server)`; `app.use(express.static("public"))`; `server.listen(3000)`.
+- `const rounds = {};` at the top — **server-side game state** (`rounds[room] = witnessId`).
+- Inside `io.on("connection", ...)`:
+  - `join` → `socket.join(room)`.
+  - `draw` → `socket.to(data.room).emit("draw", data)` (room-scoped relay).
+  - `prompt` → **guarded:** `if (rounds[description.room] !== socket.id) return;` then `socket.to(description.room).emit("prompt", description)`.
+  - `startRound` → gets `io.sockets.adapter.rooms.get(room)`, guards empty room, `Array.from` → random index → `witnessId`, stores `rounds[room] = witnessId`, then `io.to(room).emit("roundStarted", { witnessId })`.
 
-### `public/main.js` — ⚠️ has the bug above
-- Top: `const socket = io();` + a `socket.on("connect", …)` logger. ✔
-- Button/guess code from Day 1/2 (unrelated). ✔
-- Canvas setup: `ctx.strokeStyle = "pink"`, `lineWidth = 4`, `lineCap`/`lineJoin = "round"`. ✔
-- `drawLine(x0,y0,x1,y1)` helper (beginPath→moveTo→lineTo→stroke). ✔
-- `let last = { x:0, y:0 }`, mousedown sets `last`, mousemove draws locally + `socket.emit("draw", {x0,y0,x1,y1})` + updates `last`, mouseup sets `drawing=false`. ✔
-- `socket.on("draw", data => drawLine(data.x0,data.y0,data.x1,data.y1))`. ✔
-- ❌ **Duplicate `let drawing = false;`** (declared twice) → SyntaxError. **← fix this.**
-- ❌ **Stray `3`** line before the `socket.on("draw")` block. **← delete.**
+### `public/main.js` — ✅ current
+- `const socket = io()` + connect logger.
+- Room join (`#roomCode` / `#joinBtn`, `myRoom`).
+- Prompt: `#prompt` / `#promptBtn` / `descriptionEl`; emits `{ text, room }`; `socket.on("prompt")` writes `data.text` into `descriptionEl`.
+- Start Round: `#startBtn` → `socket.emit("startRound", myRoom)`.
+- `socket.on("roundStarted")` → `amWitness = (data.witnessId === socket.id)`; writes role into `#role`; sets `promptInput.disabled` / `promptBtn.disabled = !amWitness`.
+- Canvas drawing block (mousedown/move/up + `drawLine`), `socket.on("draw")` receiver.
+- Note: the `#guess` / `#sendBtn` box is still the Day-1 stub — **this is what the rating step will repurpose.**
 
-### `public/index.html` — should include (confirm)
-- `<script src="/socket.io/socket.io.js"></script>` **before** `<script src="main.js"></script>`. (This client library is auto-served by the Socket.IO server — we don't create the file.) Confirm the order is right next session.
+### `public/index.html` — ✅ current
+- Room group, canvas, guess group (stub), prompt group (`#prompt` + `#description` + `#role` + `#promptBtn`), lone `#startBtn`.
+- `<script src="/socket.io/socket.io.js"></script>` before `main.js`. ✔
 
 ### `package.json`
-- Deps: `express ^5.2.1`, `socket.io ^4.x` (installed today). Dev: `nodemon`. Script: `npm run dev` → `nodemon server.js`.
+- Deps: `express ^5.2.1`, `socket.io ^4.x`. Dev: `nodemon`. Script: `npm run dev`.
 
 ---
 
-## 4. What Amer just learned / debugged this session (build on it)
-- **Why we need the server at all:** browsers can't reach each other directly (NAT/firewalls) → the server is the middle-man that relays.
-- **HTTP vs WebSocket:** HTTP = browser asks, server answers, line closes; the server can't push. WebSocket = one persistent two-way line, either side sends anytime → what live games need.
-- **Socket.IO API:** `emit` to send, `on` to receive — it's `addEventListener` over the network. `io` = all clients, a `socket` = one client, `socket.broadcast.emit` = everyone but the sender.
-- **`http.createServer(app)` + `server.listen`** (not `app.listen`) so Socket.IO shares the port.
-- **Debugging skill leveled up:** last session a `ReferenceError` (file ran, one line failed — missing `function (e)` param); this session a `SyntaxError` (file never ran at all — duplicate `let`). He can now tell parse-time vs run-time errors apart. Reinforce this distinction.
-- **Notes captured** in `learnings/Day-03.md` (HTTP flow, the 4 steps, the pieces = hotel/manager/receptionist/phone-line analogies, the full emit→broadcast→on flow, task breakdowns).
-
-**Still-open weak spot to keep reinforcing:** the browser/server boundary. M3 is the payoff — once he *sees* strokes cross tabs, tie it back explicitly.
+## 4. Where Amer's understanding is (build on it)
+- **Solid:** `emit`/`on` as networked `addEventListener`; `io` = everyone, `socket` = one client; `io.to(room)` (all) vs `socket.to(room)` (all but sender); rooms; the prompt relay; the Start button as a *command*.
+- **Now landed (this session):** **server as source of truth** (only the server sees everyone, so only it can pick the witness) and **never trust the client** (real enforcement is the server's `rounds[room] !== socket.id` check, not a hidden button). Confirmed with the cheat test.
+- **Watch:** a couple of the M5 slices Amer placed the code but wanted the *why* reinforced — keep going slow, keep the explain-back checks (they worked). In his notes the `!==` allow/deny logic was written slightly flipped; corrected in `learnings/Milestone-4-5.md`.
 
 ---
 
-## 5. After M3 — Milestone 4 (rooms)
-Turn the single shared canvas into **private rooms** so friends join by a code and strokes only broadcast within their room:
-- Client: send/pick a room code; `socket.emit("join", code)`.
-- Server: `socket.join(code)`; relay with `io.to(code).emit("draw", data)` (or `socket.to(code).emit(...)` to exclude sender) instead of a global broadcast.
-- Concept: "broadcasting to a room" = grouping players; sets up the actual game (each game = a room). This is still Week 3.
-
----
-
-## 6. Standing preferences (already in CONTEXT.md — honor automatically)
-- **Teaching style:** deep tutor mode, preemptively, every chat — big picture → line-by-line → mental model → Java comparison → common mistakes → experiments → what to understand. (Full brief in `CONTEXT.md` §2.)
+## 5. Standing preferences (from CONTEXT.md — honor automatically)
+- **Teaching style:** deep tutor mode, preemptively, every chat — big picture → line-by-line → mental model → Java comparison → common mistakes → experiments → what to understand. (Full brief in `CONTEXT.md §2`.)
 - **Git commits:** always **Conventional Commits** (`feat:`, `fix:`, `docs:`, `chore:`, scopes, `!`/`BREAKING CHANGE`). Never plain messages.
 - **Process:** Amer types every line; Claude guides with hints/snippets, doesn't orchestrate. Struggle-first. Each working day ends in something that works + a commit.
-- **Docs separation:** `learnings/` = Amer's own-words notes; `docs/` = Claude's guides + this handoff.
+- **Docs separation:** `learnings/` = Amer's own-words notes (named `Milestone-*`); `docs/` = Claude's guides (`Day-*`) + this handoff.
 
 ---
 
-## 7. Suggested commit once M3 is confirmed
-```
-git add .
-git commit -m "feat(socket): broadcast strokes so other tabs draw live"
-git push
-```
-(Or split: `chore: add socket.io dependency`, `feat(server): relay draw events to other clients`, `fix(canvas): remove duplicate drawing declaration`.)
+## 6. Uncommitted / loose ends to check at session start
+- Confirm the latest work is committed: the roles/enforcement feature, `docs/Day-5.md`, the `learnings/` renames + `Milestone-4-5.md`. Suggested messages if not yet pushed:
+  - `feat(round): show roles and restrict prompting to the witness (server-enforced)`
+  - `docs: add Day 5 guide and refresh handoff`
+  - `docs(learnings): rename to milestones and add Milestone 4 & 5 notes`
