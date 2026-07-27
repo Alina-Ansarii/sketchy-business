@@ -1,4 +1,4 @@
-//socket.io server obj and binds it to http nserve
+//socket.io server obj and binds it to http serve
 const socket = io(); 
 
 //notifies everytime a new browser connects 
@@ -10,14 +10,11 @@ socket.on("connect", function () {
 const roomInput = document.getElementById("roomCode");
 const joinBtn = document.getElementById("joinBtn");
 
-let myRoom = null;
-
 joinBtn.addEventListener("click", function() {
   myRoom = roomInput.value;
   socket.emit("join", myRoom);
   console.log("joined room:", myRoom);
 });
-
 
 //----------------------------button details:
 const sendBtn = document.getElementById("sendBtn");
@@ -34,10 +31,10 @@ sendBtn.addEventListener("click", function() {
 const promptBtn = document.getElementById("promptBtn");
 const promptInput = document.getElementById("prompt");
 const descriptionEl = document.getElementById("description");
-
+                                  
 promptBtn.addEventListener("click", function() {
   const text = promptInput.value;
-  console.log("Prompt submitted:", text);
+  console.log("Prompt submitted:", text); 
 
   socket.emit("prompt", { text, room: myRoom });
 });
@@ -54,13 +51,20 @@ startBtn.addEventListener("click", function() {
   console.log("Round started in room:", myRoom);
 });
 
+const roleEl = document.getElementById("role");
+let amWitness = false;
+
 socket.on("roundStarted", function(data) {
-  if (data.witnessId == socket.id) {
-    console.log("I am the witness");
+  amWitness = (data.witnessId === socket.id);
+  if (amWitness) {
+    roleEl.textContent = "You are the WITNESS - describe the target";
   }
   else {
-    console.log("I am a drawer");
+    roleEl.textContent = "You are a DRAWER - wait for the description";
   }
+  promptInput.disabled = !amWitness;
+  promptBtn.disabled = !amWitness;
+
 });
 
 //--------------------------canvas details:

@@ -12,46 +12,50 @@ const { Server } = require("socket.io");
 //create socket.io server and pass the HTTP server
 //because it cares only about connections
 const io = new Server(server);
-
 //attaching behavior that if browser asks for file use public folder
 //tell app to serve static filles from public folder
 app.use(express.static("public"));
+
+const rounds = {};
+
 
 //callback called by socket.io when a browser connects
 //passes the socket it creates to us
 io.on("connection", function(socket) {
   console.log("A user connected: ", socket.id);
-
+  
   socket.on("join", function(room) {
     socket.join(room);
     console.log(socket.id, "joined room:", room);
   });
-
+  
   socket.on("disconnect", function() {
     console.log("A user left: ", socket.id);
   });
-
+  
   //relay strokes to others in the same room
   socket.on("draw", function(data) {
     socket.to(data.room).emit("draw", data);
   });
-
+  
   socket.on("prompt", function(description)  {
+    if (rounds[description.room] !== socket.id) return
     socket.to(description.room).emit("prompt", description);
   });
-
+  
   socket.on("startRound", function(room) {
     const players = io.sockets.adapter.rooms.get(room);
-
+    
     //no such room — bail quietly
     if (!players) return;                    
     const arr = Array.from(players);
     const witnessIndex = Math.floor(Math.random() * arr.length);
     const witnessId = arr[witnessIndex];
-
+    
+    rounds[room] = witnessId;
     io.to(room).emit("roundStarted", { witnessId });
   }); 
-
+  
 });
 
 
