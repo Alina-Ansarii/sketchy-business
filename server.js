@@ -23,39 +23,45 @@ const rounds = {};
 //passes the socket it creates to us
 io.on("connection", function(socket) {
   console.log("A user connected: ", socket.id);
-  
+
   socket.on("join", function(room) {
     socket.join(room);
     console.log(socket.id, "joined room:", room);
   });
-  
+
   socket.on("disconnect", function() {
     console.log("A user left: ", socket.id);
   });
-  
+
   //relay strokes to others in the same room
   socket.on("draw", function(data) {
     socket.to(data.room).emit("draw", data);
   });
-  
+
   socket.on("prompt", function(description)  {
-    if (rounds[description.room] !== socket.id) return
+    if (rounds[description.room] !== socket.id) return;
     socket.to(description.room).emit("prompt", description);
   });
-  
+
   socket.on("startRound", function(room) {
     const players = io.sockets.adapter.rooms.get(room);
-    
+
     //no such room — bail quietly
-    if (!players) return;                    
+    if (!players) return;
     const arr = Array.from(players);
     const witnessIndex = Math.floor(Math.random() * arr.length);
     const witnessId = arr[witnessIndex];
-    
+
     rounds[room] = witnessId;
     io.to(room).emit("roundStarted", { witnessId });
-  }); 
-  
+  });
+
+  //only the witness may rate — same guard as prompt (!==)
+  socket.on("rate", function(data) {
+    if (rounds[data.room] !== socket.id) return;
+    socket.to(data.room).emit("rate", data);
+  });
+
 });
 
 

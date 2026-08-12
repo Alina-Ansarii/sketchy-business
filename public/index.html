@@ -5,23 +5,23 @@
     <title>Sketchy Business</title>
     <link rel="stylesheet" href="style.css"/>
   </head>
-  
+
   <body>
     <h1>Sketchy Business</h1>
     <div>
       <input id="roomCode" type="text" placeholder="room code...">
       <button id="joinBtn">Join Room</button>
     </div>
-    <canvas id="board" width="800" height="600"></canvas> 
-    
+    <canvas id="board" width="800" height="600"></canvas>
+
     <div>
-      <input id="guess" type="textbox" placeholder="guess...">
+      <input id="rating" type="text" placeholder="rate the drawing..">
       <p id="output"></p>
-      <button id="sendBtn">Send</button>
+      <button id="rateBtn">Rate Drawing</button>
     </div>
 
     <div>
-      <input id="prompt" type="textbox" placeholder="enter description!">
+      <input id="prompt" type="text" placeholder="enter description!">
       <p id="description"></p>
       <p id="role"></p>
       <button id="promptBtn">Prompt</button>
@@ -31,5 +31,5 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="main.js"></script>
-  </body> 
-</html>  
+  </body>
+</html>

@@ -1,7 +1,7 @@
 //socket.io server obj and binds it to http serve
-const socket = io(); 
+const socket = io();
 
-//notifies everytime a new browser connects 
+//notifies everytime a new browser connects
 socket.on("connect", function () {
   console.log("connected to server, my id is ", socket.id);
 });
@@ -16,25 +16,29 @@ joinBtn.addEventListener("click", function() {
   console.log("joined room:", myRoom);
 });
 
-//----------------------------button details:
-const sendBtn = document.getElementById("sendBtn");
-const guessInput = document.getElementById("guess");
+//----------------------------rate button details:
+const rateBtn = document.getElementById("rateBtn");
+const rateInput = document.getElementById("rating");
 const output = document.getElementById("output");
 
-sendBtn.addEventListener("click", function() {
-  const text = guessInput.value;
-  console.log(output.textContent = "You typed: " + text);
-  console.log("Guess submitted:", text);
+rateBtn.addEventListener("click", function() {
+  const score = rateInput.value;
+  socket.emit("rate", { score, room: myRoom });
+  console.log("Rating submitted:", score);
+});
+
+socket.on("rate", function(data) {
+  output.textContent = "Witness rated: " + data.score + "/10";
 });
 
 //----------------------------prompt button details:
 const promptBtn = document.getElementById("promptBtn");
 const promptInput = document.getElementById("prompt");
 const descriptionEl = document.getElementById("description");
-                                  
+
 promptBtn.addEventListener("click", function() {
   const text = promptInput.value;
-  console.log("Prompt submitted:", text); 
+  console.log("Prompt submitted:", text);
 
   socket.emit("prompt", { text, room: myRoom });
 });
@@ -65,6 +69,9 @@ socket.on("roundStarted", function(data) {
   promptInput.disabled = !amWitness;
   promptBtn.disabled = !amWitness;
 
+  //only the witness can rate — lock the rating box for drawers
+  rateInput.disabled = !amWitness;
+  rateBtn.disabled = !amWitness;
 });
 
 //--------------------------canvas details:
@@ -112,5 +119,3 @@ canvas.addEventListener("mouseup", function(e) {
 socket.on("draw", function(data) {
   drawLine(data.x0, data.y0, data.x1, data.y1);
 });
-
-
