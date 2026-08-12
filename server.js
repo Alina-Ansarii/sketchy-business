@@ -17,7 +17,7 @@ const io = new Server(server);
 app.use(express.static("public"));
 
 const rounds = {};
-
+const drawings = {};
 
 //callback called by socket.io when a browser connects
 //passes the socket it creates to us
@@ -71,8 +71,19 @@ io.on("connection", function(socket) {
   //log the drawing
   socket.on("myDrawing", function(data) {
     console.log("got a drawing from", socket.id, " -length: ", data.image.length);
+    
+    //if first drawing make an empty room
+    if (!drawings[data.room]) drawings[data.room] = {};
+    drawings[data.room][socket.id] = data.image;
+
+    console.log("stored. room now has:", Object.keys(drawings[data.room]));
   }); 
-  
+
+
+ //------------------------------A1-------------------------------
+    socket.on("showLineup", function(room) {
+      io.to(room).emit("lineup", drawings[room]);
+    });
 });
 
 

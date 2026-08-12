@@ -127,3 +127,7 @@ socket.on("collectDrawings", function() {
   const image = canvas.toDataURL();
   socket.emit("myDrawing", {image, room:myRoom});
 });
+
+socket.on("lineup", function(data) {
+  console.log("lineup received:", Object.keys(data));
+});
