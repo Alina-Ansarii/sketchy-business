@@ -53,15 +53,26 @@ io.on("connection", function(socket) {
     const witnessId = arr[witnessIndex];
 
     rounds[room] = witnessId;
-    io.to(room).emit("roundStarted", { witnessId });
+    io.to(room).emit("roundStarted", { witnessId, players: arr});
   });
 
-  //only the witness may rate — same guard as prompt (!==)
+  //only the witness may rate
   socket.on("rate", function(data) {
     if (rounds[data.room] !== socket.id) return;
     socket.to(data.room).emit("rate", data);
   });
 
+  //------------------------------A1-------------------------------
+
+  //collect drawing trigger
+  socket.on("endDraw", function(room) {
+    io.to(room).emit("collectDrawings");
+  });
+  //log the drawing
+  socket.on("myDrawing", function(data) {
+    console.log("got a drawing from", socket.id, " -length: ", data.image.length);
+  }); 
+  
 });
 
 

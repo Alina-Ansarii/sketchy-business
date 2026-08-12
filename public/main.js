@@ -6,6 +6,8 @@ socket.on("connect", function () {
   console.log("connected to server, my id is ", socket.id);
 });
 
+
+
 //----------------------------room details:
 const roomInput = document.getElementById("roomCode");
 const joinBtn = document.getElementById("joinBtn");
@@ -118,4 +120,10 @@ canvas.addEventListener("mouseup", function(e) {
 //data is what they send
 socket.on("draw", function(data) {
   drawLine(data.x0, data.y0, data.x1, data.y1);
+});
+
+//emiting our drawing to the server
+socket.on("collectDrawings", function() {
+  const image = canvas.toDataURL();
+  socket.emit("myDrawing", {image, room:myRoom});
 });
